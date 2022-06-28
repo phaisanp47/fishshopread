@@ -1,0 +1,167 @@
+﻿php artisan route:list
+/////////***route****/////////////////////
+////////file route อยู่ที่ project/routes/web.php//////////////////
+route::get('/',function(){
+return view('welcome');
+}
+route::get('/about',function(){
+return view('about');
+}
+route::get('/user/{fname}/{lname}',function($fname,$lname){
+echo "สวัสดีครับ: $fname $lname";
+}
+use app\http\controllers\aboutcontroller;
+route::get('/about',[AboutController::class,'showdata']);
+
+route::get('/about',[AboutController::class,'showdata'])->name('admin');
+
+route::get('/admin',[AboutController::class,'showdata'])->name('admin')->middleware('check');
+
+route::get('/admin', function()
+{	$users=DB::table('users')->get();
+	return view('admin',compact('users'));
+})->name('admin');
+
+use app\http\controllers\DepartmentController;
+route::get('/department/all',[DepartmentController::class,'index']);
+
+use app\http\controllers\DepartmentController;
+route::post('/department/add',[DepartmentController::class,'addstore'])->name('addDepartment');
+
+use app\http\controllers\DepartmentController;
+Route : :get('/department/edit/{id}',[Departmentcontroller: : class, 'edit']);
+
+}
+
+///////////////////***view****/////////////////////
+file แสดง view ตำแหน่งอยู่ที่ project/resources/views/ชื่อไฟล์.blade.php
+<h1>ยินดีต้อนรับ {{$user}}</h1>
+@if($user == "Admin")
+<h1>ยินดีต้อนรับ admin</h1>
+@else
+<h1>ยินดีต้อนรับ user</h1>
+@endif
+
+@foreach($arr as $menu)
+<a href="">{{$menu}}</a>
+@endforeach
+
+@for($i=1;$i<=5;$i++)
+<p>{{$i}}</p>
+@endfor
+
+<a href="{{url('/')}}">Home</a>
+<a href="{{route('about')}}">about</a>
+
+<form action="{{ route('addDepartment') }}" method="post">
+@csrf ///ป้องกันการโจมตีใส่ script
+
+@error('department_name')
+<span> {{$message}} </span>
+@enderror
+</form>
+
+@foreach($departments as $row)
+<tr>
+<th>{{$departments->firstItem()+$loop->index}}</th>
+<td>{{$row->department_name}}</td>
+<td>{{$row->name)}}</td>
+<td>
+@if($row->created at == NULL)
+ไม่ถูกนิยาม
+@else
+{{Carbon|carbon : : parse($row->created_at)->diffForHumans()}}
+@endif
+</td>
+</tr>
+@endforeach
+
+
+
+///////////////////***controller****/////////////////////
+file ทำงาน controller ตำแหน่งอยู่ที่ project/app/http/Controller/ชื่อ.php
+php artisan make:controller Admincontroller
+function index(){
+ return view('about');
+}
+function showdata(){
+ echo "hello Laravel";
+}
+function index(){
+$address = "111 test ,kaswd ";
+$tel = "01 23 64";
+$email = "test@test.com ";
+ return view('about',['address'=>$address,'tel'=>$tel, 'email'=>$email]);
+ return view('about',compact('address','tel', 'email'));
+return view('about') ->with('address',$address)->with
+->with('tel',$tel)
+->with('email',$email)
+->with('error',"ไม่พบข้อมูล")
+}
+
+public function addstore(request $request){
+	dd($request->department_name);///
+	$request->validate([
+	'department_name' ->'required|unique:departments|max:20'	]);
+
+	$request->validate(
+	[ 'department_name' ->'required|unique:departments|max:20'],
+	[ 'department_name.required'=>"กรุณาป้อนข้อมูล",
+	'department_name.max' => "ห้ามเกิน 20"
+]);
+
+///บันทึกข้อมูล
+$department = new Department;
+$department->department_name - $request->department_name;
+$department->user_id = Auth::user()->id;
+$department->save();
+
+
+//use  Illuminatel Support | Facades lAuth;
+//use  Illuminatelsupport | Facades |DB;
+
+	public function index()f
+	$departments = DB : :table(' departments ')
+	->join('users','departments.user_id', 'users.id')
+	->select('departments.*' , 'users.name ')
+	->paginate(5);
+
+	return view('admin.department.index',compact('departments'));
+
+}
+
+
+///////////////////***middleware****/////////////////////
+file ทำงาน middleware ตำแหน่งอยู่ที่ project/app/http/middleware
+terminal : php artisan make:middleware CheckAdmin
+ Class CheckAdmin
+{
+	public function handle(){
+	if($request->user=="kongruksiam"){
+	return $redirect('/admin');}
+	}
+	else{return $redirect('/');}
+	return $next($request);
+}
+///////////////middelware ต้องตั้งค่า kernel.php//////////////////////
+protected $routeMiddleware = [...
+'check'=>\App\Http\Middleware\CheckAdmin::class
+];
+
+
+////////////////*** model เชื่อมต่อ Database ********/////////////////////////
+ตำแหน่ง \app\models\ชื่อ.php และ DB database\migrations\ชื่อ.php
+php artisan make:model Department -m
+
+public function up()
+{ ...
+	$table->interger('user_id'); ...
+	$table->softDeletes();
+}
+
+
+
+
+
+---4.44.05
+

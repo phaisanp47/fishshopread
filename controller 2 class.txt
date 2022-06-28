@@ -1,0 +1,17 @@
+Route:
+
+Route::get('main',[HomePageController::class,'show']);
+
+
+
+Controller:
+
+class HomePageController extends Controller
+{
+    function show()
+    {
+        $classes = Classes::all();
+        $feeds = Feeds::all();
+        return view('index', compact('classes', 'feeds'));
+    }
+}
