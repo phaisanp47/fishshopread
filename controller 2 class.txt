@@ -3,11 +3,9 @@ Route:
 Route::get('main',[HomePageController::class,'show']);
 
 
-
 php artisan make:controller ShowController
 Controller:
 
-class HomePageController extends Controller
 class ShowController extends Controller
 {
     function show()

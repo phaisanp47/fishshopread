@@ -1,0 +1,68 @@
+เก็บรวบรวมหัวข้อที่น่าสนใจ
+1. หน้า website หลักของ Laravel
+2. การ installation Laravel ติดตั้งได้ 2 วิิธี คือ “laravel new blog” และ “composer create-project --prefer-dist laravel/laravel blog” เลือกเองได้โตแล้ว หรือจะเข้าไปดูรายละเอียดได้จากลิ้งนี้ Installation Laravel
+3. Laravel มีคำ command ที่ชาญฉลาด (artisan) 1 ในคำสั่งนั้นคือ “php artisan serve" เราก็จะได้ web server ที่ start พร้อม dev ได้แล้ว โดย access เข้าด้วย http://localhost:8000
+4. config Laravel ต่าง ๆ จะอยู่ที่ไฟล์ .env ตัวอย่างเช่น database ,app name เป็นต้น
+5. ถ้าอยากจะ dev laravel ให้คล่องแคร่วและ ว่องไว ควรจะรู้ว่าไฟล์ต่าง ๆ อยู่ที่ไหนบ้าง ดังนั้นควรศึกษาให้เข้าใจในเรื่อง Directory Structure
+6. Route (URL ของแต่ละ Page) จะเก็บรวบรวมอยู่ที่ไฟล์ routes/web.php กำหนดเพิ่มได้ที่ไฟล์นี้
+7. Route [::get,::post,::put,::patch,::delete,::options] โดยพื้นฐาน แต่ก็มี [::match,::any] ให้ใช้งานหากต้องการเพิ่มความสามารถในการใช้งานที่มีความหลากหลายมากขั้น ทำความเข้าใจเพิ่มเติมได้ที่ Routing
+8. Route::get มีความสามารถในการกำหนด optional parameters ได้โดยใส่ “/{name?}” และกำหนดค่า default ไว้ใน callback function แทนหากไม่มีการส่งค่า parameters {name?}
+9. Route::get validate parameters ได้ด้วย Regular Expression Constraints ตัวอย่าง ->where('id' => '[0-9]+'); คือการกำหนดให้ส่งค่า parameter {name} ได้แต่ตัวเลข 0–9 ได้เท่านั้น
+10. Route::fallback กำหนด url ที่เกิดกรณี 404 page not found
+11. cross-site request forgery (CSRF) เพิ่มความ secure โดยการเพิ่ม @csrf ใน form POST ศึกษาเพิ่มเติมที่นี่ CSRF Protection
+12. X-CSRF-TOKEN function POST จะมีการ check X-CSRF-TOKEN request header แก้โดยเพิ่ม “<meta name="csrf-token" content="{{ csrf_token() }}">” ไว้ใน tag header ของ layout page
+13. สร้าง Controller File เพื่อแยก Business Logic ออกจากไฟล์ /route/web.php และทำการ Mapping Route ด้วย Route::get('user/{id}', 'UserController@show') แทนการเขียน Logic ในไฟล์ /route/web.php
+14. สร้างไฟล์ Controller ด้วยคำสั่ง php artisan make:controller PhotoController ช่วยลดเวลาการ dev ได้ ศึกษาเพิ่มเติมได้ที่ลิ้งน Controller
+15. Get Data จาก Illuminate\Http\Request parameters มีด้วยกันหลายวิธี $request->input[‘name’] ,
+$request->all() จะได้ array ,
+$request->name , 
+$request->query(‘name’) จะได้ parameter name จาก queryString ,
+$request->input(‘user.name’) อ่าน jsonbody จาก post data { “user” : {“name” : “medium”}} ,
+$request->filled(‘name’) check input name is empty ?
+16. Get Cookie จาก Illuminate\Http\Request จะใช้ $request->cookie('name'); หรือ Cookie::get('name') ก็ได้ไม่มีปัญหา
+17. Get File Data จาก Illuminate\Http\Request $request->file(‘photo’) หรือ $request->photo ใช้ function has ตรวจสอบ File ว่ามีค่ามาหรือไม่ด้วย $request->has('photo') ก็จะ self code ได้ระดับนึง
+18. สร้าง Response Object ด้วย Illuminate\Http\Response มีด้วยกันหลายวิธีตัวอย่างเช่น return response('Hello World', 200)
+->header('Content-Type', 'text/plain');
+19. Redirect Illuminate\Http\RedirectResponse ทำได้ด้วย return redirect('home/dashboard'); หรืออยากจะย้อนกลับไป step ก่อนหน้า return back()->withInput();
+20. Redirect Illuminate\Http\RedirectResponse โดยการแนบ Flash Session Data เพื่อใช้ไว้การแจ้งเตือนการทำ transaction status ด้วย return redirect('dashboard')->with('status', 'Profile updated!');
+21. สร้าง Response JSON ด้วย return response()->json([ 'name' => 'Abigail', 'state' => 'CA']);
+22. สร้าง Response Streamed Downloads ด้วย return response()->download($pathToFile);
+23. สร้าง view และเรียกใช้คำสั่ง return view('admin.profile', $data); โดยสร้างไฟล์ view ไว้ที่ resources/views/admin/profile.blade.php
+24. อ้างอิง URL ของแต่ละ route path ด้วย url("/posts/{$post->id}"); http://example.com/posts/1
+25. ว่าด้วยเรื่องการเก็บข้อมูล Session
+- Session::get(“key”) หรือ $request->session()->get(“key”) เพื่อ Get Data
+- Session:put(“key”,”value”) หรือ $request->session()->put(“key”,”value”) เพื่อ Set Data
+- Session::exists(“key”) หรือ $request->session()->exists(“key”); เพื่อ Check Key เคยมีใน session แล้วหรือยัง
+- Session::push(“key”,”value”) หรือ $request->session()->push(“key”,”value”) เพิ่มค่า item ใน session array
+- Session::pull(‘key’,”default”) ลบค่า item ใน session array
+- Session::forget(“key”) หรือ $request->session()->forget(“key”) ลบ session
+26. เรื่อง Validate Input $request->validate([
+'title' => 'required|unique:posts|max:255',
+'body' => 'required',
+]); validate input return ค่า error จากนั้นก็ set Flash Data ให้กลับไปที่หน้า form ด้วย return redirect('post/create')
+->withErrors($validator)
+->withInput(); ศึกษาเพิ่มเติมได้ที่ลิ้งนี้ Validate
+27. Logger เพิ่ม code logger ช่วยให้ตรวจสอบปัญหา ได้เมื่อ Deploy บน Production ศึกษาเพิ่มเติมได้ที่ Logger
+Log::emergency($message);
+Log::alert($message);
+Log::critical($message);
+Log::error($message);
+Log::warning($message);
+Log::notice($message);
+Log::info($message);
+Log::debug($message);
+28. Blade Template extending layout reuse Code Layout Template ใช้งานกับหน้าจออื่น ๆ ลด Duplicate code ตัวอย่าง BladeTemplate
+29. Blade Component สร้างไฟล์ component.blade.php กับ Code ที่ Duplicate เยอะ ๆ แยกออกมาเขียนแยกเป็น external file แล้วเรียกใช้งานด้วย @component(‘component’)@endcomponent ศึกษาเพิ่มเติมได้ที่นี่ BladeComponent
+30. htmlspecialchars {!! $name !!}. แสดงค่า value ที่เป็น html
+31. pass Json Object to vue props ด้วย <example-component :some-prop='@json($array)'></example-component>
+32. blade template condition if else ,loop ,while ,swith ,empty ,isset
+IF ELSE: @if (true) @else @endif 
+IF : @if (true) @endif 
+IF ELSEIF ELSE: @if (true) @elseif (true) @else @endif 
+SWITCH CASE: @switch (value) @case (true) @break @endswitch
+FOR: @for @endfor
+FOREACH: @foreach @endforeach
+WHILE: @while @endwhile
+33. locale ทำ multiple language ศึกษาเพิ่มเติม Localization
+34. Laravel MIX compile resource (js,css,image,…) Laravel MIX
+
